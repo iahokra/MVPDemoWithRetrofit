@@ -33,7 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View{
     ToggleButton toggleBtn;
     boolean enable;
     Presenter mPresenter;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         toggleBtn.setChecked(false);
         enable=false;
         final Handler handler=new Handler();
-
+        mPresenter=new ImpPresenter(this);
         toggleBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -56,12 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     enable=true;
                     Log.e("THINH", "3g: On" );
-                    mPresenter=new ImpPresenter(new View() {
-                        @Override
-                        public void dataTest(ArrayList<user> listUser) {
-                            Toast.makeText(MainActivity.this,listUser.size()+"",Toast.LENGTH_LONG).show();
-                        }
-                    });
+
                     Runnable runnable=new Runnable() {
                         @Override
                         public void run() {
@@ -88,38 +83,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getDataWithRetrofit()
-    {
-         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        IUser service = retrofit.create(IUser.class);
-        Call<ArrayList<user>> call = service.listRepos();
-       call.enqueue(new Callback<ArrayList<user>>() {
-           @Override
-           public void onResponse(Call<ArrayList<user>> call, Response<ArrayList<user>> response) {
-               ArrayList<user> listUser=new ArrayList<user>();
-               listUser.addAll(response.body());
-               Log.e("THINH", "onResponse: " + listUser.size());
-               if(!listUser.isEmpty())
-               {
-                   Toast.makeText(MainActivity.this,listUser.get(0).getTitle(),Toast.LENGTH_LONG).show();
-               }
-               else
-               {
-                   Toast.makeText(MainActivity.this,"ko co",Toast.LENGTH_LONG).show();
-               }
-           }
-
-           @Override
-           public void onFailure(Call<ArrayList<user>> call, Throwable t) {
-                t.printStackTrace();
-           }
-       });
+    @Override
+    public void dataTest(ArrayList<user> listUser) {
+        Toast.makeText(MainActivity.this,""+listUser.size(),Toast.LENGTH_LONG).show();
     }
-
-
-
 }
