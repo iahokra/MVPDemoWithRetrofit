@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View{
     boolean enable;
     Presenter mPresenter;
     Network mCurrentWiFiNetwork;
+    Runnable runnable;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View{
         enable=false;
         final Handler handler=new Handler();
         mPresenter=new ImpPresenter(this);
+
         toggleBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -56,21 +58,20 @@ public class MainActivity extends AppCompatActivity implements View{
                 {
                     enable=true;
                     Log.e("THINH", "3g: On" );
-
-                    Runnable runnable=new Runnable() {
+                    runnable=new Runnable() {
                         @Override
                         public void run() {
-                            mPresenter.getDataWithRetrofit();
+                            if(enable==true)
+                            {
+                                mPresenter.getDataWithRetrofit();
+
+                                handler.postDelayed(runnable,5000);
+                            }
+
+
                         }
                     };
-                    if(enable==true)
-                    {
-                        handler.postDelayed(runnable,5000);
-                    }
-
-                   // getDataWithRetrofit();
                     runnable.run();
-
 
                 }else
                 {
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View{
 
             }
         });
+
+
+
     }
 
     @Override
